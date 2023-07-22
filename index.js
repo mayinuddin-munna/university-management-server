@@ -14,6 +14,23 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+const verifyJWT = (req, res, next) => {
+  const authorization = req.headers.authorization;
+  if (!authorization) {
+    return res
+      .status(401)
+      .send({ error: true, message: "unauthorized access" });
+  }
+  const token = authorization.split(" ")[1];
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(403).send({ error: true, message: "forbidden access" });
+    }
+    req.decoded = decoded;
+    next();
+  });
+};
+
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.mfncjjb.mongodb.net/?retryWrites=true&w=majority`;
 
 const client = new MongoClient(uri, {
@@ -27,16 +44,44 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // await client.connect();
-    const schoolManagementDB = client.db("schoolManagement").collection("students");
+    const studentDB = client.db("schoolManagement").collection("students");
+    const adminDB = client.db("schoolManagement").collection("admins");
+    const usersB = client.db("schoolManagement").collection("users");
 
-    app.get("/students", async (req, res) => {
-      const result = await schoolManagementDB.find().toArray();
+
+    app.post("/jwt", (req, res) => {
+      const user = req.body;
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: "12h",
+      });
+      res.send({ token });
+    });
+
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const query = { email: user.email };
+      const exitingUser = await usersB.findOne(query);
+      if (exitingUser) {
+        return res.send({ message: "User Already Exist" });
+      }
+      const result = await usersB.insertOne(user);
       res.send(result);
     });
 
-    app.post("/students", async (req, res) => {
+    app.get("/students", async (req, res) => {
+      const result = await studentDB.find().toArray();
+      res.send(result);
+    });
+
+    // app.post("/students", async (req, res) => {
+    //   const query = req.body;
+    //   const result = await studentDB.insertOne(query);
+    //   res.send(result);
+    // });
+
+    app.post("/admins", async (req, res) => {
       const query = req.body;
-      const result = await schoolManagementDB.insertOne(query);
+      const result = await adminDB.insertOne(query);
       res.send(result);
     });
 
