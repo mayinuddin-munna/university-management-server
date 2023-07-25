@@ -46,8 +46,7 @@ async function run() {
     // await client.connect();
     const studentDB = client.db("schoolManagement").collection("students");
     const adminDB = client.db("schoolManagement").collection("admins");
-    const usersB = client.db("schoolManagement").collection("users");
-
+    const usersDB = client.db("schoolManagement").collection("users");
 
     app.post("/jwt", (req, res) => {
       const user = req.body;
@@ -60,11 +59,11 @@ async function run() {
     app.post("/users", async (req, res) => {
       const user = req.body;
       const query = { email: user.email };
-      const exitingUser = await usersB.findOne(query);
+      const exitingUser = await usersDB.findOne(query);
       if (exitingUser) {
         return res.send({ message: "User Already Exist" });
       }
-      const result = await usersB.insertOne(user);
+      const result = await usersDB.insertOne(user);
       res.send(result);
     });
 
@@ -74,21 +73,22 @@ async function run() {
         res.send({ admin: false });
       }
       const query = { email: email };
-      const user = await usersB.findOne(query);
+      const user = await usersDB.findOne(query);
       const result = { admin: user?.role === "admin" };
       res.send(result);
     });
 
-    app.get("/students", async (req, res) => {
-      const result = await studentDB.find().toArray();
-      res.send(result);
+    // search by roll, session, semester;
+    app.get("/search", async (req, res) => {
+      const { roll, session, semester } = req.query;
+      const searchQuery = {
+        roll: roll,
+        session: session,
+        semester: semester,
+      };
+      const searchResult = await adminDB.findOne(searchQuery);
+      return res.send(searchResult);
     });
-
-    // app.post("/students", async (req, res) => {
-    //   const query = req.body;
-    //   const result = await studentDB.insertOne(query);
-    //   res.send(result);
-    // });
 
     app.post("/admins", async (req, res) => {
       const query = req.body;
