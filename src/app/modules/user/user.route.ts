@@ -1,8 +1,8 @@
-export type User = {
-  id: string;
-  password: string;
-  needPasswordChange: string;
-  role: 'student' | 'faculty' | 'admin';
-  status: 'in-progress' | 'blocked';
-  isDeleted: string;
-};
+import express from 'express';
+import { UserController } from './user.controller';
+
+const router = express.Router();
+
+router.post('/create-student', UserController.createStudent)
+
+export const UserRoutes = router;
