@@ -8,7 +8,10 @@ const createStudent = async (req: Request, res: Response) => {
     // data validation schema using zod
     // const zodParseData = studentValidationSchema.parse(studentData);
 
-    const result = await UserServices.createStudentIntoDB();
+    const result = await UserServices.createStudentIntoDB(
+      password,
+      studentData,
+    );
 
     res.status(200).json({
       success: true,
@@ -24,6 +27,6 @@ const createStudent = async (req: Request, res: Response) => {
   }
 };
 
-export const UserController = {
+export const UserControllers = {
   createStudent,
 };
