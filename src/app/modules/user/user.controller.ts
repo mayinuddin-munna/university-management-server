@@ -1,31 +1,31 @@
-import { NextFunction, Request, Response } from 'express';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { UserServices } from './user.service';
+import sendResponse from '../../utils/sendResponds';
+import httpStatus from 'http-status';
 
-const createStudent = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const { password, student: studentData } = req.body;
-
-    // data validation schema using zod
-    // const zodParseData = studentValidationSchema.parse(studentData);
-
-    const result = await UserServices.createStudentIntoDB(
-      password,
-      studentData,
-    );
-
-    res.status(200).json({
-      success: true,
-      message: 'Student is created successfully',
-      data: result,
-    });
-  } catch (err) {
-    next(err);
-  }
+const catchAsync = (fn: RequestHandler) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    Promise.resolve(fn(req, res, next)).catch((err) => next(err));
+  };
 };
+
+const createStudent = catchAsync(async (req, res, next) => {
+  const { password, student: studentData } = req.body;
+
+  // data validation schema using zod
+  // const zodParseData = studentValidationSchema.parse(studentData);
+
+  const result = await UserServices.createStudentIntoDB(password, studentData);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Student is created successfully',
+    data: result,
+  });
+});
 
 export const UserControllers = {
   createStudent,
