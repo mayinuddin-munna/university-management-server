@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-unused-vars */
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import { UserServices } from './user.service';
 import sendResponse from '../../utils/sendResponds';
@@ -11,7 +9,7 @@ const catchAsync = (fn: RequestHandler) => {
   };
 };
 
-const createStudent = catchAsync(async (req, res, next) => {
+const createStudent = catchAsync(async (req, res) => {
   const { password, student: studentData } = req.body;
 
   // data validation schema using zod
