@@ -1,5 +1,6 @@
 import { Schema, model } from 'mongoose';
 import {
+  StudentModel,
   TGuardian,
   TLocalGuardian,
   TStudent,
@@ -150,8 +151,8 @@ studentSchema.pre('aggregate', function (next) {
 
 //creating a custom static method
 studentSchema.statics.isUserExists = async function (id: string) {
-  const existingUser = await StudentModel.findOne({ id });
+  const existingUser = await Student.findOne({ id });
   return existingUser;
 };
 
-export const StudentModel = model<TStudent>('Student', studentSchema);
+export const Student = model<TStudent, StudentModel>('Student', studentSchema);

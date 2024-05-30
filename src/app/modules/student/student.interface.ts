@@ -1,4 +1,4 @@
-import { Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 export type TUserName = {
   firstName: string;
@@ -40,3 +40,7 @@ export type TStudent = {
   profileImg?: string;
   isDeleted: boolean;
 };
+
+export interface StudentModel extends Model<TStudent> {
+  isUserExists(): Promise<TStudent | null>;
+}
