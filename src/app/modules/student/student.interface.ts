@@ -2,7 +2,7 @@ import { Model, Types } from 'mongoose';
 
 export type TUserName = {
   firstName: string;
-  middleName?: string;
+  middleName: string;
   lastName: string;
 };
 
@@ -27,8 +27,8 @@ export type TStudent = {
   user: Types.ObjectId;
   password: string;
   name: TUserName;
-  gender: 'male' | 'female';
-  dateOfBirth?: string;
+  gender: 'male' | 'female' | 'other';
+  dateOfBirth?: Date;
   email: string;
   contactNo: string;
   emergencyContactNo: string;
@@ -42,6 +42,20 @@ export type TStudent = {
   isDeleted: boolean;
 };
 
+//for creating static
+
 export interface StudentModel extends Model<TStudent> {
-  isUserExists(): Promise<TStudent | null>;
+  isUserExists(id: string): Promise<TStudent | null>;
 }
+
+// for creating instance
+
+// export interface StudentMethods {
+//   isUserExists(id: string): Promise<TStudent | null>;
+// }
+
+// export type StudentModel = Model<
+//   TStudent,
+//   Record<string, never>,
+//   StudentMethods
+// >;

@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-unused-vars */
+
 import { NextFunction, Request, Response } from 'express';
 
-const globalErrHandler = (
+const globalErrorHandler = (
   err: any,
   req: Request,
   res: Response,
@@ -15,7 +16,8 @@ const globalErrHandler = (
   return res.status(statusCode).json({
     success: false,
     message,
+    error: err,
   });
 };
 
-export default globalErrHandler;
+export default globalErrorHandler;

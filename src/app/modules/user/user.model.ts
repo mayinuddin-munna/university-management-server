@@ -1,19 +1,20 @@
 import bcrypt from 'bcrypt';
 import { Schema, model } from 'mongoose';
-import { TUser } from './user.interface';
 import config from '../../config';
+import { TUser } from './user.interface';
 
 const userSchema = new Schema<TUser>(
   {
     id: {
       type: String,
-      require: true,
+      required: true,
+      unique: true,
     },
     password: {
       type: String,
       required: true,
     },
-    needPasswordChange: {
+    needsPasswordChange: {
       type: Boolean,
       default: true,
     },
