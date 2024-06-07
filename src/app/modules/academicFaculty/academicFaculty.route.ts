@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post(
   '/create-academic-faculty',
-  validateRequest(AcademicFacultyValidation.createAcademicValidationSchema),
+  validateRequest(AcademicFacultyValidation.createAcademicFacultyValidationSchema),
   AcademicFacultyControllers.createAcademicFaculty,
 );
 
@@ -15,7 +15,7 @@ router.get('/:facultyId', AcademicFacultyControllers.getSingleAcademicFaculty);
 
 router.patch(
   '/:facultyId',
-  validateRequest(AcademicFacultyValidation.updateAcademicValidationSchema),
+  validateRequest(AcademicFacultyValidation.updateAcademicFacultyValidationSchema),
   AcademicFacultyControllers.updateAcademicFaculty,
 );
 
