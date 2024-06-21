@@ -29,7 +29,7 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
   try {
     session.startTransaction();
 
-    //set  generated id
+    //set generated id
     userData.id = await generateStudentId(admissionSemester);
 
     // create a user
@@ -40,7 +40,7 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
       throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create user');
     }
 
-    // set id , _id as user
+    // set id, _id as user
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id; //reference _id
 
