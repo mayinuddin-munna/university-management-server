@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose from 'mongoose';
 import config from '../../config';
 import { TStudent } from '../student/student.interface';
@@ -53,10 +54,11 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
     await session.endSession();
 
     return newStudent;
-  } catch (error) {
+  } catch (error:any) {
     await session.abortTransaction();
     await session.endSession();
-    throw new AppError(httpStatus.NOT_ACCEPTABLE, 'Failed to create student');
+    throw new Error(error);
+    // throw new AppError(httpStatus.NOT_ACCEPTABLE, 'Failed to create student');
   }
 };
 
