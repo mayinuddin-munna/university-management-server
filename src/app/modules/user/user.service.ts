@@ -9,6 +9,7 @@ import { User } from './user.model';
 import { generateStudentId } from './user.utils';
 import AppError from '../../errors/AppError';
 import httpStatus from 'http-status';
+import { TAcademicSemester } from '../academicSemester/academicSemester.interface';
 
 const createStudentIntoDB = async (password: string, payload: TStudent) => {
   // create a user object
@@ -31,7 +32,7 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
     session.startTransaction();
 
     //set generated id
-    userData.id = await generateStudentId(admissionSemester);
+    userData.id = await generateStudentId(admissionSemester as TAcademicSemester);
 
     // create a user
     const newUser = await User.create([userData], { session });
@@ -54,7 +55,7 @@ const createStudentIntoDB = async (password: string, payload: TStudent) => {
     await session.endSession();
 
     return newStudent;
-  } catch (error:any) {
+  } catch (error: any) {
     await session.abortTransaction();
     await session.endSession();
     throw new Error(error);
