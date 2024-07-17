@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post(
   '/create-course',
-  validateRequest(CourseValidation.createCourseValidationSchema),
+  // validateRequest(CourseValidation.createCourseValidationSchema),
   CourseControllers.createCourse,
 );
 
