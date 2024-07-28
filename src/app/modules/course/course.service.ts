@@ -35,68 +35,88 @@ const updateCourseIntoDB = async (id: string, payload: Partial<TCourse>) => {
     payload;
 
   const session = await mongoose.startSession();
+  try {
+    const updateBasicCourseInfo = await Course.findByIdAndUpdate(
+      id,
+      courseRemainingData,
+      {
+        new: true,
+        runValidators: true,
+        session,
+      },
+    );
 
-  const updateBasicCourseInfo = await Course.findByIdAndUpdate(
-    id,
-    courseRemainingData,
-    {
-      new: true,
-      runValidators: true,
-      session,
-    },
-  );
+    if (!updateBasicCourseInfo) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update');
+    }
 
-  if (!updateBasicCourseInfo) {
+    // check if there is any pre requisite course to update
+    if (preRequisiteCourses && preRequisiteCourses.length > 0) {
+      const deletePreRequisites = preRequisiteCourses
+        .filter((el) => el.course && el.isDeleted)
+        .map((el) => el.course);
+
+      const deletePreRequisiteCourses = await Course.findByIdAndUpdate(
+        id,
+        {
+          $pull: {
+            preRequisiteCourse: { course: { $in: deletePreRequisites } },
+          },
+        },
+        {
+          new: true,
+          runValidators: true,
+          session,
+        },
+      );
+
+      if (!deletePreRequisiteCourses) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update');
+      }
+
+      // filter out the new course fields
+      const newPreRequisites = preRequisiteCourses?.filter(
+        (el) => el.course && !el.isDeleted,
+      );
+
+      const newPreRequisiteCourses = await Course.findByIdAndUpdate(
+        id,
+        {
+          $addToSet: { preRequisiteCurse: { $each: newPreRequisites } },
+        },
+        {
+          new: true,
+          runValidators: true,
+          session,
+        },
+      );
+
+      if (!newPreRequisiteCourses) {
+        throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update');
+      }
+
+      const result = await Course.findById(id).populate(
+        'preRequisiteCurse.course',
+      );
+
+      return result;
+    }
+    await session.commitTransaction();
+    await session.endSession();
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
     throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update');
   }
+};
 
-  // check if there is any pre requisite course to update
-  if (preRequisiteCourses && preRequisiteCourses.length > 0) {
-    const deletePreRequisites = preRequisiteCourses
-      .filter((el) => el.course && el.isDeleted)
-      .map((el) => el.course);
-
-    const deletePreRequisiteCourses = await Course.findByIdAndUpdate(
-      id,
-      {
-        $pull: {
-          preRequisiteCourse: { course: { $in: deletePreRequisites } },
-        },
-      },
-      {
-        new: true,
-        runValidators: true,
-        session,
-      },
-    );
-
-    if (!deletePreRequisiteCourses) {
-      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update');
-    }
-
-    // filter out the new course fields
-    const newPreRequisites = preRequisiteCourses?.filter(
-      (el) => el.course && !el.isDeleted,
-    );
-
-    const newPreRequisiteCourses = await Course.findByIdAndUpdate(
-      id,
-      {
-        $addToSet: { preRequisiteCurse: { $each: newPreRequisites } },
-      },
-      {
-        new: true,
-        runValidators: true,
-        session,
-      },
-    );
-
-    if (!newPreRequisiteCourses) {
-      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update');
-    }
-  }
-
-  const result = await Course.findById(id).populate('preRequisiteCurse.course');
+const assignFacultiesIntoDB = async (courseId: string, faculties: string) => {
+  const result = await Course.findByIdAndUpdate(
+    courseId,
+    // faculties,
+    { isDeleted: true },
+    { new: true },
+  );
 
   return result;
 };
@@ -114,7 +134,7 @@ const deleteCourseFromDB = async (id: string) => {
 export const CourseServices = {
   createCourseIntoDB,
   getAllCourseFromDB,
-  getSingleCourseFromDB,
+  assignFacultiesIntoDB,
   updateCourseIntoDB,
   deleteCourseFromDB,
 };
