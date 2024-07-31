@@ -20,7 +20,11 @@ router.delete('/:id', CourseControllers.deleteCourse);
 
 router.get('/:id', CourseControllers.getSingleCourse);
 
-router.put('/:courseId/assign-faculties', CourseControllers.assignFaculties);
+router.put(
+  '/:courseId/assign-faculties',
+  validateRequest(CourseValidation.assignFacultiesWithCourseValidationSchema),
+  CourseControllers.assignFaculties,
+);
 
 router.get('/', CourseControllers.getAllCourses);
 
