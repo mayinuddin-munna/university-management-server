@@ -25,7 +25,7 @@ router.put(
   validateRequest(CourseValidation.facultiesWithCourseValidationSchema),
   CourseControllers.assignFaculties,
 );
- 
+
 router.delete(
   '/:courseId/remove-faculties',
   validateRequest(CourseValidation.facultiesWithCourseValidationSchema),

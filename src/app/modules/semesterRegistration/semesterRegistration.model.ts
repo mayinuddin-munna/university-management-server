@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { TSemesterRegistration } from './semesterRegistration.interface';
-import { SemesterRegistrationStatue } from './semesterRegistration.constant';
+import { SemesterRegistrationStatus } from './semesterRegistration.constant';
 
 const semesterRegistrationSchema = new mongoose.Schema<TSemesterRegistration>(
   {
@@ -12,7 +12,7 @@ const semesterRegistrationSchema = new mongoose.Schema<TSemesterRegistration>(
     },
     status: {
       type: String,
-      enum: SemesterRegistrationStatue,
+      enum: SemesterRegistrationStatus,
       default: 'UPCOMING',
     },
     startDate: {
