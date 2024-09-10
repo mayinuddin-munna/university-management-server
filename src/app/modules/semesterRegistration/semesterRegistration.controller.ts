@@ -14,7 +14,7 @@ const createSemesterRegistration = catchAsync(
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
-      message: 'Course is created successfully',
+      message: 'Semester Registration is created successfully.',
       data: result,
     });
   },
@@ -57,6 +57,7 @@ const getSingleSemesterRegistration = catchAsync(
 const updateSemesterRegistration = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.params;
+
     const result =
       await SemesterRegistrationServices.updateSemesterRegistrationIntoDB(
         id,
