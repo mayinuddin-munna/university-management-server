@@ -4,6 +4,7 @@ import { SemesterRegistration } from '../semesterRegistration/semesterRegistrati
 import { TOfferedCourse } from './offeredCourse.interface';
 import { OfferedCourse } from './offeredCourse.model';
 import { AcademicDepartment } from '../academicDepartment/academicDepartment.model';
+import { hasTimeConflict } from './offeredCourse.utils';
 
 const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   // Check if the semester reg. is is exists!
@@ -14,6 +15,9 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
     academicDepartment,
     faculty,
     course,
+    days,
+    startTime,
+    endTime,
   } = payload;
 
   const isSemesterRegistrationExists =
@@ -47,6 +51,53 @@ const createOfferedCourseIntoDB = async (payload: TOfferedCourse) => {
   const isFacultyExists = await AcademicDepartment.findById(faculty);
   if (!isFacultyExists) {
     throw new AppError(httpStatus.NOT_FOUND, 'Faculty not found!');
+  }
+
+  // check if the department is belong to the faculty.
+  const isDepartmentBelongToFaculty = await AcademicDepartment.findOne({
+    _id: academicDepartment,
+    academicFaculty,
+  });
+
+  if (!isDepartmentBelongToFaculty) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      `The ${isAcademicDepartmentExists.name} is belong to the ${isAcademicFacultyExists?.name}`,
+    );
+  }
+
+  const isSameOfferedCourseExistsWithSameRegisteredSemesterWithSameSection =
+    await OfferedCourse.findOne({
+      semesterRegistration,
+      sourse,
+      section,
+    });
+
+  if (isSameOfferedCourseExistsWithSameRegisteredSemesterWithSameSection) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Offered course with course already exists',
+    );
+  }
+
+  // get the schedules of the faculties
+  const assignedSchedules = await OfferedCourse.find({
+    semesterRegistration,
+    faculty,
+    days: { $in: days },
+  }).select('Days startTime endTime');
+
+  const newSchedule = {
+    days,
+    startTime,
+    endTime,
+  };
+
+  if (hasTimeConflict(assignedSchedules, newSchedule)) {
+    throw new AppError(
+      httpStatus.CONFLICT,
+      'This faculties is not available at this time! Choose others time or day',
+    );
   }
 
   const result = await OfferedCourse.create({ ...payload, academicSemesters });
