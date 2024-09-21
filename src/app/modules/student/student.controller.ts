@@ -4,26 +4,25 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { StudentServices } from './student.service';
 
+const getSingleStudent = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await StudentServices.getSingleStudentFromDB(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Student is retrieved succesfully',
+    data: result,
+  });
+});
+
 const getAllStudents: RequestHandler = catchAsync(async (req, res) => {
   const result = await StudentServices.getAllStudentsFromDB(req.query);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Student's are retrieved successfully!",
-    data: result,
-  });
-});
-
-const getSingleStudent = catchAsync(async (req, res) => {
-  const { studentId } = req.params;
-
-  const result = await StudentServices.getSingleStudentFromDB(studentId);
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Student is retrieved successfully',
+    message: 'Student are retrieved succesfully',
     data: result,
   });
 });
@@ -31,13 +30,12 @@ const getSingleStudent = catchAsync(async (req, res) => {
 const updateStudent = catchAsync(async (req, res) => {
   const { id } = req.params;
   const { student } = req.body;
-
   const result = await StudentServices.updateStudentIntoDB(id, student);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Student is update successfully',
+    message: 'Student is updated succesfully',
     data: result,
   });
 });
@@ -49,7 +47,7 @@ const deleteStudent = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'Student is deleted successfully',
+    message: 'Student is deleted succesfully',
     data: result,
   });
 });
@@ -57,6 +55,6 @@ const deleteStudent = catchAsync(async (req, res) => {
 export const StudentControllers = {
   getAllStudents,
   getSingleStudent,
-  updateStudent,
   deleteStudent,
+  updateStudent,
 };

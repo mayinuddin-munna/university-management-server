@@ -16,22 +16,22 @@ class QueryBuilder<T> {
         $or: searchableFields.map(
           (field) =>
             ({
-              [field]: { $regex: searchTerm },
+              [field]: { $regex: searchTerm, $options: 'i' },
             }) as FilterQuery<T>,
         ),
       });
     }
+
     return this;
   }
 
   filter() {
-    const queryObj = { ...this.query };
+    const queryObj = { ...this.query }; // copy
 
     // Filtering
     const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
 
-    excludeFields.forEach((element) => delete queryObj[element]);
-    // console.log({ query, queryObj });
+    excludeFields.forEach((el) => delete queryObj[el]);
 
     this.modelQuery = this.modelQuery.find(queryObj as FilterQuery<T>);
 
@@ -48,10 +48,11 @@ class QueryBuilder<T> {
 
   paginate() {
     const page = Number(this?.query?.page) || 1;
-    const limit = Number(this?.query?.limit) || 1;
+    const limit = Number(this?.query?.limit) || 10;
     const skip = (page - 1) * limit;
 
-    this.modelQuery = this.modelQuery?.skip(skip)?.limit(limit);
+    this.modelQuery = this.modelQuery.skip(skip).limit(limit);
+
     return this;
   }
 

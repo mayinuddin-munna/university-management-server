@@ -1,20 +1,20 @@
-import httpStatus from 'http-status';
-import sendResponse from '../../utils/sendResponse';
-import catchAsync from '../../utils/catchAsync';
-import { SemesterRegistrationServices } from './semesterRegistration.service';
 import { Request, Response } from 'express';
+import httpStatus from 'http-status';
+import catchAsync from '../../utils/catchAsync';
+import sendResponse from '../../utils/sendResponse';
+import { SemesterRegistrationService } from './semesterRegistration.service';
 
 const createSemesterRegistration = catchAsync(
   async (req: Request, res: Response) => {
     const result =
-      await SemesterRegistrationServices.createSemesterRegistrationIntoDB(
+      await SemesterRegistrationService.createSemesterRegistrationIntoDB(
         req.body,
       );
 
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
-      message: 'Semester Registration is created successfully.',
+      message: 'Semester Registration is created successfully!',
       data: result,
     });
   },
@@ -23,7 +23,7 @@ const createSemesterRegistration = catchAsync(
 const getAllSemesterRegistrations = catchAsync(
   async (req: Request, res: Response) => {
     const result =
-      await SemesterRegistrationServices.getAllSemesterRegistrationsFromDB(
+      await SemesterRegistrationService.getAllSemesterRegistrationsFromDB(
         req.query,
       );
 
@@ -41,7 +41,7 @@ const getSingleSemesterRegistration = catchAsync(
     const { id } = req.params;
 
     const result =
-      await SemesterRegistrationServices.getSingleSemesterRegistrationsFromDB(
+      await SemesterRegistrationService.getSingleSemesterRegistrationsFromDB(
         id,
       );
 
@@ -57,9 +57,8 @@ const getSingleSemesterRegistration = catchAsync(
 const updateSemesterRegistration = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.params;
-
     const result =
-      await SemesterRegistrationServices.updateSemesterRegistrationIntoDB(
+      await SemesterRegistrationService.updateSemesterRegistrationIntoDB(
         id,
         req.body,
       );
@@ -77,7 +76,7 @@ const deleteSemesterRegistration = catchAsync(
   async (req: Request, res: Response) => {
     const { id } = req.params;
     const result =
-      await SemesterRegistrationServices.deleteSemesterRegistrationFromDB(id);
+      await SemesterRegistrationService.deleteSemesterRegistrationFromDB(id);
 
     sendResponse(res, {
       statusCode: httpStatus.OK,
@@ -88,7 +87,7 @@ const deleteSemesterRegistration = catchAsync(
   },
 );
 
-export const SemesterRegistrationControllers = {
+export const SemesterRegistrationController = {
   createSemesterRegistration,
   getAllSemesterRegistrations,
   getSingleSemesterRegistration,

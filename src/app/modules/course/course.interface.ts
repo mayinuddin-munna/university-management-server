@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 
-export type TPreRequisiteCourse = {
+export type TPreRequisiteCourses = {
   course: Types.ObjectId;
   isDeleted: boolean;
 };
@@ -11,10 +11,10 @@ export type TCourse = {
   code: number;
   credits: number;
   isDeleted?: boolean;
-  preRequisiteCurse: [TPreRequisiteCourse];
+  preRequisiteCourses: [TPreRequisiteCourses];
 };
 
-export type TCourseFaculty = {
+export type TCoursefaculty = {
   course: Types.ObjectId;
-  faculty: [Types.ObjectId];
+  faculties: [Types.ObjectId];
 };

@@ -12,7 +12,7 @@ const createSemesterRegistrationValidationSchema = z.object({
   }),
 });
 
-const updateSemesterRegistrationValidationSchema = z.object({
+const upadateSemesterRegistrationValidationSchema = z.object({
   body: z.object({
     academicSemester: z.string().optional(),
     status: z
@@ -27,5 +27,5 @@ const updateSemesterRegistrationValidationSchema = z.object({
 
 export const SemesterRegistrationValidations = {
   createSemesterRegistrationValidationSchema,
-  updateSemesterRegistrationValidationSchema,
+  upadateSemesterRegistrationValidationSchema,
 };
